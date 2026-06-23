@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VidStem - Live demo</title>
+
+  <!-- The drop-in UI styles. Include this once on any page that hosts a call. -->
+  <link rel="stylesheet" href="/client/src/vidstem.css" />
+
+  <style>
+    /* Styles below are just for this demo's lobby screen - not part of the SDK. */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(120% 120% at 50% 0%, #11151f 0%, #0a0c11 60%);
+      color: #e9ecf2;
+    }
+
+    /* The call fills the screen once you join. */
+    #call { position: fixed; inset: 0; display: none; }
+    body.in-call #call { display: flex; }
+    body.in-call .lobby { display: none; }
+
+    .lobby { min-height: 100%; display: grid; place-items: center; padding: 24px; }
+    .card {
+      width: 100%; max-width: 420px;
+      background: #14181f; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; margin-bottom: 6px; }
+    .logo { width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(140deg, #6c8cff, #9b6cff); display: grid; place-items: center; }
+    .logo svg { width: 20px; height: 20px; }
+    .card p.tagline { color: #9aa3b2; margin: 0 0 24px; font-size: 14px; }
+    label { display: block; font-size: 13px; color: #9aa3b2; margin: 16px 0 7px; }
+    input {
+      width: 100%; padding: 12px 14px; border-radius: 11px; font-size: 15px;
+      background: #0d1017; border: 1px solid rgba(255,255,255,0.1); color: #e9ecf2;
+    }
+    input:focus { outline: 2px solid #6c8cff; outline-offset: 0; border-color: transparent; }
+    .row { display: flex; gap: 10px; }
+    .row input { flex: 1; }
+    button.join {
+      width: 100%; margin-top: 24px; padding: 13px; border: none; border-radius: 12px;
+      background: linear-gradient(140deg, #6c8cff, #9b6cff); color: #fff;
+      font-size: 16px; font-weight: 600; cursor: pointer; transition: transform .12s ease;
+    }
+    button.join:hover { transform: translateY(-2px); }
+    .hint { font-size: 12.5px; color: #6b7280; margin-top: 14px; text-align: center; }
+    .hint a { color: #9aa3b2; }
+    .secondary { background: #1f2530; border: 1px solid rgba(255,255,255,0.1); color: #e9ecf2;
+      border-radius: 10px; padding: 9px 12px; font-size: 13px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <!-- Pre-call lobby (demo-app code, not part of the VidStem SDK) -->
+  <div class="lobby">
+    <form class="card" id="lobby-form">
+      <div class="brand">
+        <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg></span>
+        VidStem
+      </div>
+      <p class="tagline">Enter a name and a room to start or join a call.</p>
+
+      <label for="name">Your name</label>
+      <input id="name" type="text" placeholder="e.g. Alex" autocomplete="name" required />
+
+      <label for="room">Room</label>
+      <div class="row">
+        <input id="room" type="text" placeholder="e.g. team-standup" required />
+        <button type="button" class="secondary" id="randomize" title="Generate a random room">Random</button>
+      </div>
+
+      <button class="join" type="submit">Join call</button>
+      <p class="hint">Open this page in a second tab (or share the link) and join the same room to see two-way video. <a href="/">Back to home</a></p>
+    </form>
+  </div>
+
+  <!-- The call surface. VidStemUI renders the video grid + controls in here. -->
+  <div id="call"></div>
+
+  <script type="module">
+    import { VidStemUI } from '/client/src/ui.js';
+
+    const nameInput = document.getElementById('name');
+    const roomInput = document.getElementById('room');
+    const form = document.getElementById('lobby-form');
+
+    // Build the signaling URL from the current page automatically. This means
+    // the demo works locally (ws://) and over HTTPS when deployed (wss://).
+    const serverUrl = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host;
+
+    // Pre-fill: ?room=foo in the URL, or a saved name, or a random room.
+    const params = new URLSearchParams(location.search);
+    const randomRoom = () => 'room-' + Math.random().toString(36).slice(2, 8);
+    roomInput.value = params.get('room') || randomRoom();
+    nameInput.value = localStorage.getItem('vidstem:name') || '';
+
+    document.getElementById('randomize').addEventListener('click', () => {
+      roomInput.value = randomRoom();
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const displayName = nameInput.value.trim() || 'Guest';
+      const room = roomInput.value.trim();
+      if (!room) return;
+
+      localStorage.setItem('vidstem:name', displayName);
+      // Reflect the room in the URL so it is easy to copy and share.
+      history.replaceState(null, '', `?room=${encodeURIComponent(room)}`);
+      document.body.classList.add('in-call');
+
+      // Three lines: create the UI, point it at the room, and start.
+      const ui = new VidStemUI({ container: '#call', serverUrl, room, displayName });
+      ui.start();
+
+      // When the user clicks "leave", return them to the lobby.
+      ui.vs.on('left', () => document.body.classList.remove('in-call'));
+    });
+  </script>
+</body>
+</html>

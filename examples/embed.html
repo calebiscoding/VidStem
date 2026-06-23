@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VidStem - Minimal embed</title>
+
+  <!-- 1) Include the stylesheet once. -->
+  <link rel="stylesheet" href="/client/src/vidstem.css" />
+
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0a0c11; }
+    /* 2) Give the call a box with a height. It fills whatever space you give it. */
+    #call { height: 100vh; }
+  </style>
+</head>
+<body>
+  <!-- 2) A container for the call. -->
+  <div id="call"></div>
+
+  <!-- 3) Start a call. This is the entire integration. -->
+  <script type="module">
+    import { VidStemUI } from '/client/src/ui.js';
+
+    new VidStemUI({
+      container: '#call',
+      // Auto-detect ws:// vs wss:// based on how this page is served.
+      serverUrl: (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host,
+      room: 'embed-example',     // everyone with this room id shares the call
+      displayName: 'Guest ' + Math.floor(Math.random() * 1000),
+    }).start();
+  </script>
+</body>
+</html>

@@ -1,0 +1,503 @@
+/**
+ * VidStem - Drop-in UI styles
+ * ---------------------------------------------------------------------------
+ * Self-contained styles for VidStemUI. No framework required. Everything is
+ * namespaced under `.vs-` so it will not clash with your site's CSS.
+ *
+ * Theme it by overriding the CSS variables below, e.g.:
+ *   .vs-root { --vs-accent: #7c5cff; --vs-bg: #0b0d12; }
+ */
+
+.vs-root {
+  /* ---- Theme tokens (override these to restyle) ---- */
+  --vs-bg: #0b0d12;
+  --vs-surface: #161a23;
+  --vs-surface-2: #1f2530;
+  --vs-border: rgba(255, 255, 255, 0.08);
+  --vs-text: #e8eaf0;
+  --vs-text-dim: #9aa3b2;
+  --vs-accent: #6c8cff;
+  --vs-danger: #ff5470;
+  --vs-radius: 16px;
+  --vs-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 420px;
+  box-sizing: border-box;
+  background: radial-gradient(120% 120% at 50% 0%, #11151f 0%, var(--vs-bg) 60%);
+  color: var(--vs-text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+.vs-root *,
+.vs-root *::before,
+.vs-root *::after {
+  box-sizing: border-box;
+}
+
+/* ---- Participant grid ---- */
+.vs-grid {
+  flex: 1;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  padding-bottom: 104px; /* leave room for the floating control bar */
+  align-content: center;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+  overflow: auto;
+}
+
+/* A single participant up large and centered. */
+.vs-grid[data-count="1"] {
+  grid-template-columns: minmax(0, min(80vw, 1000px));
+}
+/* Two participants side by side. */
+.vs-grid[data-count="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* ---- Video tile ---- */
+.vs-tile {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius);
+  overflow: hidden;
+  box-shadow: var(--vs-shadow);
+  animation: vs-pop 0.25s ease;
+}
+
+@keyframes vs-pop {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.vs-tile video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  background: #000;
+}
+
+/* Mirror your own camera so it feels like a mirror, the way users expect. */
+.vs-tile-local video {
+  transform: scaleX(-1);
+}
+
+/* When the camera is off, hide the video and show the initials avatar. */
+.vs-tile.vs-video-off video {
+  visibility: hidden;
+}
+
+.vs-avatar {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--vs-surface-2);
+}
+
+.vs-tile.vs-video-off .vs-avatar {
+  display: flex;
+}
+
+.vs-avatar span {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--vs-accent), #9b6cff);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Tile footer (name + mute indicator) ---- */
+.vs-tile-footer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 14px 10px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.65), transparent);
+  pointer-events: none;
+}
+
+.vs-tile-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.vs-mic-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--vs-danger);
+  color: #fff;
+  flex: 0 0 auto;
+}
+
+.vs-mic-indicator svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---- Control bar ---- */
+.vs-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 999px;
+  background: rgba(22, 26, 35, 0.72);
+  border: 1px solid var(--vs-border);
+  box-shadow: var(--vs-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 5;
+}
+
+.vs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: var(--vs-surface-2);
+  color: var(--vs-text);
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.vs-btn:hover {
+  background: #2a3140;
+  transform: translateY(-2px);
+}
+
+.vs-btn:active {
+  transform: translateY(0);
+}
+
+.vs-btn:focus-visible {
+  outline: 2px solid var(--vs-accent);
+  outline-offset: 2px;
+}
+
+.vs-btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* "Active" = a toggle is engaged (muted / camera off / sharing). */
+.vs-btn.vs-active {
+  background: #3a2030;
+  color: var(--vs-danger);
+}
+
+.vs-btn-danger {
+  background: var(--vs-danger);
+  color: #fff;
+}
+
+.vs-btn-danger:hover {
+  background: #ff3b5c;
+}
+
+/* ---- Toast / status ---- */
+.vs-toast {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(92%, 460px);
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border);
+  color: var(--vs-text);
+  font-size: 14px;
+  box-shadow: var(--vs-shadow);
+  z-index: 6;
+}
+
+.vs-toast[data-kind="error"] {
+  border-color: var(--vs-danger);
+  color: #ffd7de;
+}
+
+/* ---- Unread chat badge on the control button ---- */
+.vs-btn {
+  position: relative;
+}
+
+.vs-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--vs-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--vs-bg);
+}
+
+/* ---- Settings menu (device pickers) ---- */
+.vs-menu {
+  position: absolute;
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  width: min(92%, 320px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: rgba(22, 26, 35, 0.94);
+  border: 1px solid var(--vs-border);
+  box-shadow: var(--vs-shadow);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  z-index: 6;
+}
+
+.vs-menu[hidden] {
+  display: none;
+}
+
+.vs-menu-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--vs-text-dim);
+}
+
+.vs-menu-row select {
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: 9px;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border);
+  color: var(--vs-text);
+  font-size: 13px;
+}
+
+.vs-menu-row select:focus-visible {
+  outline: 2px solid var(--vs-accent);
+}
+
+.vs-menu-empty {
+  font-size: 13px;
+  color: var(--vs-text-dim);
+  text-align: center;
+}
+
+/* ---- Chat panel ---- */
+.vs-chat {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 320px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(20, 24, 31, 0.96);
+  border-left: 1px solid var(--vs-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  z-index: 7;
+}
+
+.vs-root.vs-chat-open .vs-chat {
+  transform: none;
+}
+
+/* Make room for the panel so tiles and the control bar are not hidden. */
+.vs-root.vs-chat-open .vs-grid {
+  padding-right: 332px;
+}
+
+.vs-root.vs-chat-open .vs-bar {
+  left: calc(50% - 160px);
+}
+
+.vs-chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--vs-border);
+}
+
+.vs-chat-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--vs-text-dim);
+  cursor: pointer;
+}
+
+.vs-chat-close:hover {
+  background: var(--vs-surface-2);
+  color: var(--vs-text);
+}
+
+.vs-chat-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.vs-chat-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+}
+
+.vs-msg-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 3px;
+}
+
+.vs-msg-name {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--vs-text);
+}
+
+.vs-msg-self .vs-msg-name {
+  color: var(--vs-accent);
+}
+
+.vs-msg-time {
+  font-size: 11px;
+  color: var(--vs-text-dim);
+}
+
+.vs-msg-text {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--vs-text);
+  overflow-wrap: anywhere;
+}
+
+.vs-chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid var(--vs-border);
+}
+
+.vs-chat-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border);
+  color: var(--vs-text);
+  font-size: 14px;
+}
+
+.vs-chat-input:focus-visible {
+  outline: 2px solid var(--vs-accent);
+  border-color: transparent;
+}
+
+.vs-chat-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 10px;
+  background: var(--vs-accent);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.vs-chat-send:hover {
+  background: #5878f5;
+}
+
+.vs-chat-send svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Small screens ---- */
+@media (max-width: 640px) {
+  .vs-grid {
+    grid-template-columns: 1fr !important;
+    padding: 10px;
+    padding-bottom: 96px;
+  }
+  .vs-btn {
+    width: 48px;
+    height: 48px;
+  }
+  /* The chat panel takes the whole screen; do not reserve side space. */
+  .vs-chat {
+    width: 100%;
+  }
+  .vs-root.vs-chat-open .vs-grid {
+    padding-right: 10px;
+  }
+  .vs-root.vs-chat-open .vs-bar {
+    left: 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-tile { animation: none; }
+  .vs-btn { transition: none; }
+}
