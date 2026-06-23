@@ -1,0 +1,27 @@
+{
+  "name": "vidstem",
+  "version": "0.1.0",
+  "description": "VidStem - lightweight, open-source video & audio calling you can embed in any website. No paid provider required.",
+  "type": "module",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": [
+    "webrtc",
+    "video-call",
+    "audio-call",
+    "streaming",
+    "signaling",
+    "p2p",
+    "self-hosted"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "license": "MIT"
+}
