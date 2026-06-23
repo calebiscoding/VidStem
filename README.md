@@ -23,10 +23,14 @@ VidStem adds real-time video and audio calls to any page using [WebRTC](https://
 **Requirements:** [Node.js](https://nodejs.org) 16 or newer.
 
 ```bash
-# 1. Install the one server dependency
+# 1. Get the code
+git clone https://github.com/coleauburnwesley/VidStem.git
+cd VidStem
+
+# 2. Install the one server dependency
 npm install
 
-# 2. Start the signaling server (also serves the demo)
+# 3. Start the signaling server (also serves the demo)
 npm start
 ```
 
