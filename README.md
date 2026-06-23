@@ -1,6 +1,6 @@
 # VidStem
 
-[![Open Source by Aero Softworks](https://img.shields.io/badge/Open%20Source-Aero%20Softworks-6c8cff?style=flat-square&logo=opensourceinitiative&logoColor=white)](https://aerosoftworks.com)
+[![Open Source by calebiscoding](https://img.shields.io/badge/Open%20Source-Aero%20Softworks-6c8cff?style=flat-square&logo=opensourceinitiative&logoColor=white)](https://aerosoftworks.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-3ddc97?style=flat-square)](LICENSE)
 
 **Lightweight, open-source video & audio calling you can embed in any website - no paid provider required.**
@@ -24,7 +24,7 @@ VidStem adds real-time video and audio calls to any page using [WebRTC](https://
 
 ```bash
 # 1. Get the code
-git clone https://github.com/coleauburnwesley/VidStem.git
+git clone https://github.com/calebiscoding/VidStem.git
 cd VidStem
 
 # 2. Install the one server dependency
